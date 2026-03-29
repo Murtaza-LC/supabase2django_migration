@@ -2,7 +2,7 @@
 
 A step-by-step guide for migrating a production application from **Supabase** (PostgreSQL + Edge Functions + Auth) to a **Django REST Framework** backend — including schema extraction, model generation, app splitting, DRF scaffolding, seed data loading, and frontend API migration.
 
-This repo documents the migration of our Platform which has 109 database tables, ~1,950 columns, complex RLS, multi-tenancy, and Supabase Edge Functions — migrated to Django 5.x + DRF + Celery + PostgreSQL.
+This repo documents the migration of our platform which has 109 database tables, ~1,950 columns, complex RLS, multi-tenancy, and Supabase Edge Functions — migrated to Django 5.x + DRF + Celery + PostgreSQL.
 
 ---
 
@@ -60,16 +60,17 @@ apps/
 - Docker + Docker Compose (for running the full stack)
 - Node.js 18+ (for frontend migration script)
 - Supabase project with an active Edge Function for data export
-- Our dev environment is mac and we have tested the scripts on Linux
 
----
+## Platform Compatibility
+Scripts are tested on **macOS** and **Linux**. Windows users will need WSL2 
+or to adapt the shell commands manually.
 
 ## Who is this for?
 
 This repo is for developers and teams who:
 
 - already understand Supabase core functionality and have used it in a real project
-- have working knowledge of Django and Django REST Framework
+- have working knowledge of Django ORM, migrations, and DRF ViewSets
 - are comfortable reading and adapting Python, shell, and JavaScript scripts for their own project
 - want a practical migration playbook based on a real migration journey
 
@@ -79,7 +80,7 @@ This repo may not be the best fit if:
 
 - you are completely new to both Supabase and Django
 - your project is small enough to rebuild manually
-- you are looking for a one-click migration tool
+- you are looking for a one-click migration tool OR you need a fully automated, zero-touch migration (this playbook still requires judgment calls and manual fixes)
 - your target backend is not Django / DRF
 
 ---
