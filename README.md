@@ -1,6 +1,6 @@
 # Supabase → Django Migration Playbook
 
-A battle-tested, step-by-step guide for migrating a production application from **Supabase** (PostgreSQL + Edge Functions + Auth) to a **Django REST Framework** backend — including schema extraction, model generation, app splitting, DRF scaffolding, seed data loading, and frontend API migration.
+A step-by-step guide for migrating a production application from **Supabase** (PostgreSQL + Edge Functions + Auth) to a **Django REST Framework** backend — including schema extraction, model generation, app splitting, DRF scaffolding, seed data loading, and frontend API migration.
 
 This repo documents the migration of our Platform which has 109 database tables, ~1,950 columns, complex RLS, multi-tenancy, and Supabase Edge Functions — migrated to Django 5.x + DRF + Celery + PostgreSQL.
 
@@ -60,6 +60,27 @@ apps/
 - Docker + Docker Compose (for running the full stack)
 - Node.js 18+ (for frontend migration script)
 - Supabase project with an active Edge Function for data export
+- Our dev environment is mac and we have tested the scripts on Linux
+
+---
+
+## Who is this for?
+
+This repo is for developers and teams who:
+
+- already understand Supabase core functionality and have used it in a real project
+- have working knowledge of Django and Django REST Framework
+- are comfortable reading and adapting Python, shell, and JavaScript scripts for their own project
+- want a practical migration playbook based on a real migration journey
+
+## Who is this not for?
+
+This repo may not be the best fit if:
+
+- you are completely new to both Supabase and Django
+- your project is small enough to rebuild manually
+- you are looking for a one-click migration tool
+- your target backend is not Django / DRF
 
 ---
 
@@ -75,13 +96,15 @@ curl "https://<your-project>.supabase.co/functions/v1/db-full-dump" \
 ```
 
 Then split into separate schema and data files (makes it easier to reload independently):
+
 Your Typical File should contain
--- EXTENSIONS
--- CUSTOM ENUM TYPES
--- CREATE TABLE (without FK constraints)
--- FOREIGN KEY CONSTRAINTS
--- INDEXES
--- DATA (INSERT statements)
+
+- EXTENSIONS
+- CUSTOM ENUM TYPES
+- CREATE TABLE (without FK constraints)
+- FOREIGN KEY CONSTRAINTS
+- INDEXES
+- DATA (INSERT statements)
 
 ```bash
 # For example, if your file has Tables, Alter Tables and Indexes together followed by INSERT INTO statements 
@@ -216,7 +239,7 @@ After running:
 **Verify model class placement:**
 
 ```bash
-python3 check_class_location.py --project-root . --json-out class_locations.json
+python3 check_class_locations.py --project-root . --json-out class_locations.json
 ```
 
 **Verify import correctness across all files:**
@@ -382,10 +405,10 @@ Run the automated migration script to replace Supabase client calls with Django 
 
 ```bash
 # Dry run first — shows what would change without modifying files
-node migrate-supabase.js --dry-run
+node migrate_supabase.js --dry-run
 
 # Apply migrations (creates .backup files for every modified file)
-node migrate-supabase.js
+node migrate_supabase.js
 ```
 
 **What it rewrites automatically:**
@@ -518,11 +541,11 @@ print('SQL executed successfully and rolled back.')
 | `splitmodels.py` | Splits `master_models.py` into per-app `models.py` files, creates Django app skeletons, fixes cross-app FK strings |
 | `generate_drf.py` | Generates `serializers.py`, `views.py`, `urls.py` for each app |
 | `diff_models.py` | Diffs `inspectdb` output against hand-edited `models.py` files; reports missing fields, orphans, type mismatches |
-| `check_class_location.py` | Validates that specific model classes are in the expected app |
+| `check_class_locations.py` | Validates that specific model classes are in the expected app |
 | `check_model_imports.py` | Scans files for `from apps.<app>.models import ...` and verifies the class is actually defined there |
 | `split_seed.py` | Splits Supabase SQL export into dependency-ordered load files; skips archived rows |
 | `verify_seed.py` | Parses seed file to count expected rows per table; generates a SQL query to compare against DB actuals |
-| `migrate-supabase.js` | Node.js script to rewrite Supabase client calls to Django API calls across all frontend TypeScript files |
+| `migrate_supabase.js` | Node.js script to rewrite Supabase client calls to Django API calls across all frontend TypeScript files |
 
 ---
 
@@ -573,6 +596,7 @@ Supabase exports rows in table-alphabetical order, not dependency order. Loading
 - [ ] `python manage.py migrate --check` exits clean (DB matches migration history)
 - [ ] `python manage.py check` returns no errors
 - [ ] `diff_models.py` shows no unresolved sections
+- [ ] 'check_class_locations.py' and 'check_model_imports.py' validate the data
 
 **Data:**
 - [ ] `verify_seed.sql` shows `gap = 0` for all non-skipped tables
@@ -582,6 +606,7 @@ Supabase exports rows in table-alphabetical order, not dependency order. Loading
 - [ ] `python manage.py runserver` starts without errors
 - [ ] All routes in `api/v1/` resolve correctly
 - [ ] Health endpoints return 200: `/health/live`, `/health/ready`
+- [ ] 'migrate_supabase.js' rewrites Supabase client calls to Django API calls
 
 **Frontend:**
 - [ ] `npm run type-check` passes
