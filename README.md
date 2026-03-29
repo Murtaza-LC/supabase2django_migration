@@ -539,14 +539,14 @@ print('SQL executed successfully and rolled back.')
 
 | Script | Purpose |
 |---|---|
-| `splitmodels.py` | Splits `master_models.py` into per-app `models.py` files, creates Django app skeletons, fixes cross-app FK strings |
-| `generate_drf.py` | Generates `serializers.py`, `views.py`, `urls.py` for each app |
-| `diff_models.py` | Diffs `inspectdb` output against hand-edited `models.py` files; reports missing fields, orphans, type mismatches |
-| `check_class_locations.py` | Validates that specific model classes are in the expected app |
-| `check_model_imports.py` | Scans files for `from apps.<app>.models import ...` and verifies the class is actually defined there |
-| `split_seed.py` | Splits Supabase SQL export into dependency-ordered load files; skips archived rows |
-| `verify_seed.py` | Parses seed file to count expected rows per table; generates a SQL query to compare against DB actuals |
-| `migrate_supabase.js` | Node.js script to rewrite Supabase client calls to Django API calls across all frontend TypeScript files |
+| [`splitmodels.py`](./scripts/splitmodels.py) | Splits `master_models.py` into per-app `models.py` files, creates Django app skeletons, fixes cross-app FK strings |
+| [`generate_drf.py`](./scripts/generate_drf.py)` | Generates `serializers.py`, `views.py`, `urls.py` for each app |
+| [`diff_models.py`](./scripts/diff_models.py) | Diffs `inspectdb` output against hand-edited `models.py` files; reports missing fields, orphans, type mismatches |
+| [`check_class_locations.py`](./scripts/check_class_locations.py) | Validates that specific model classes are in the expected app |
+| [`check_model_imports.py`](./scripts/check_model_imports.py) | Scans files for `from apps.<app>.models import ...` and verifies the class is actually defined there |
+| [`split_seed.py`](./scripts/split_seed.py) | Splits Supabase SQL export into dependency-ordered load files; skips archived rows |
+| [`verify_seed.py`](./scripts/verify_seed.py) | Parses seed file to count expected rows per table; generates a SQL query to compare against DB actuals |
+| [`migrate_supabase.js`](./scripts/migrate_supabase.js) | Node.js script to rewrite Supabase client calls to Django API calls across all frontend TypeScript files |
 
 ---
 
@@ -597,7 +597,7 @@ Supabase exports rows in table-alphabetical order, not dependency order. Loading
 - [ ] `python manage.py migrate --check` exits clean (DB matches migration history)
 - [ ] `python manage.py check` returns no errors
 - [ ] `diff_models.py` shows no unresolved sections
-- [ ] 'check_class_locations.py' and 'check_model_imports.py' validate the data
+- [ ] `check_class_locations.py` and `check_model_imports.py` show no cross-app import or model location errors
 
 **Data:**
 - [ ] `verify_seed.sql` shows `gap = 0` for all non-skipped tables
@@ -607,9 +607,9 @@ Supabase exports rows in table-alphabetical order, not dependency order. Loading
 - [ ] `python manage.py runserver` starts without errors
 - [ ] All routes in `api/v1/` resolve correctly
 - [ ] Health endpoints return 200: `/health/live`, `/health/ready`
-- [ ] 'migrate_supabase.js' rewrites Supabase client calls to Django API calls
 
 **Frontend:**
+- [ ] `migrate-supabase.js` has been run and all Supabase client calls rewritten
 - [ ] `npm run type-check` passes
 - [ ] `npm run build` succeeds
 - [ ] No remaining `supabase.` references in `src/` (except the client config file itself)
