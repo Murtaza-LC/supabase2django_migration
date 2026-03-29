@@ -1,3 +1,40 @@
+"""
+Author: Murtaza Nuruddin
+
+splitmodels.py
+
+Utilities for splitting an inspectdb-generated Django model file into multiple
+domain-oriented Django apps.
+
+This script reads a single ``master_models.py`` file, identifies each model's
+database table via ``Meta.db_table``, maps that table to a target Django app,
+rewrites cross-model relationships to use string-based app-qualified references,
+and writes the models into per-app ``models.py`` files under the configured
+``APPS_DIR``.
+
+It also:
+- creates missing Django apps via ``manage.py startapp``
+- updates each generated ``apps.py`` with the correct dotted app path
+- enables model management by replacing ``managed = False`` with ``managed = True``
+- generates helper outputs for ``INSTALLED_APPS`` registration and migration review
+
+Expected workflow:
+1. Run ``inspectdb`` and save the output as ``master_models.py``.
+2. Configure table-prefix-to-app mappings in ``get_unified_app()``.
+3. Run this script from the Django project root.
+4. Review:
+   - ``apps_to_register.txt``
+   - ``migration_report.log``
+   - generated app ``models.py`` files
+
+Important notes:
+- The script assumes models inherit from ``models.Model``.
+- The script relies on ``Meta.db_table`` to determine routing.
+- Relationship rewriting currently supports ``ForeignKey``,
+  ``ManyToManyField``, and ``OneToOneField``.
+- Table prefix mappings should be reviewed carefully before use in production.
+"""
+
 import os
 import re
 import subprocess
